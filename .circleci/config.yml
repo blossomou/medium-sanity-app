@@ -1,0 +1,24 @@
+version: 2.1
+
+# Define the jobs we want to run for this project
+jobs:
+  build_and_test:
+    machine: true
+    steps:
+      - checkout
+      - run:
+          # remove prefixes with / from branch name
+          name: 'Build and Test'
+          command: |
+            BRANCH_NAME=${CIRCLE_BRANCH/*\//}
+            docker build -t blossomou/medium-sanity-app:$BRANCH_NAME -f ./Dockerfile .
+      # TODO: looking into using remote docker to take advantage for layer caching
+      # - setup_remote_docker:
+      #     version: 19.03.13
+      #     docker_layer_caching: true
+
+# Orchestrate our job run sequence
+workflows:
+  api:
+    jobs:
+      - build_and_test
